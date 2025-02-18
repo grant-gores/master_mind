@@ -77,14 +77,35 @@ class Board
                 puts "Computer solved the code: #{@code} in #{guess_num + 1} tries!"
                 return
             else
+                hint = user_generated_code_hint(sample)
+                puts "Hint: #{hint.join(', ')}" unless hint.empty?
                 puts "Computer trying again."
             end
         end
         puts "Computer failed to solve the code. The correct code was: #{@code}"
     end
   
-    def user_generated_code_hint
-        # You can implement this method later
+    def user_generated_code_hint(input)
+        hints = []
+        code_copy = @code.dup # Copy to avoid modifying original
+  
+        # Step 1: Find exact matches (Red Pegs)
+        input.each_with_index do |color, idx|
+            if color == @code[idx]
+                hints << "Red Peg"
+                code_copy[idx] = nil # Remove matched color to prevent duplicate counting
+            end
+        end
+  
+        # Step 2: Find color matches in the wrong position (White Pegs)
+        input.each_with_index do |color, idx|
+            if color != @code[idx] && code_copy.include?(color)
+                hints << "White Peg"
+                code_copy[code_copy.index(color)] = nil # Remove matched color
+            end
+        end
+  
+        hints
     end
   
     def computer_generated_code_hint(input)
